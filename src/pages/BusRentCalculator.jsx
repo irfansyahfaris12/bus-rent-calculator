@@ -90,8 +90,13 @@ const BusRentCalculator = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-xl">
+<<<<<<< HEAD
       <h2 className="text-2xl font-bold mb-6 text-center">🚍 Bus Rent Calculator</h2>
       <BusForm {...{ busType, setBusType, busCount, setBusCount, dayCount, setDayCount, shifCount, setShifCount, driverCount, setDriverCount,tripCount, setTripCount, distance, setDistance, fuelPrice, setFuelPrice, driverFee, setDriverFee, maintenancePrice, setMaintenancePrice, depreciationCost, setDepreciationCost, margin, setMargin }} />
+=======
+      <h2 className="text-2xl font-bold mb-6 text-center">🚍 Bus Rent Calculators</h2>
+      <BusForm {...{ busType, setBusType, busCount, setBusCount, dayCount, setDayCount, shifCount, setShifCount, driverCount, setDriverCount, distance, setDistance, fuelPrice, setFuelPrice, driverFee, setDriverFee, maintenancePrice, setMaintenancePrice, depreciationCost, setDepreciationCost, margin, setMargin }} />
+>>>>>>> efb19be0e3fdc375681fa33f148933afc3f230b0
       <div className="flex gap-4 mt-4">
         <button onClick={handleCalculate} className="w-full p-2 bg-blue-500 text-white rounded-lg">🧮 Calculate</button>
         <button onClick={handleClear} className="w-1/4 p-2 bg-gray-500 text-white rounded-lg">❌ Clear</button>
