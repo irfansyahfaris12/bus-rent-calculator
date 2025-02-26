@@ -15,6 +15,8 @@ const BusForm = ({
   setShifCount,
   driverCount,
   setDriverCount,
+  tripCount, 
+  setTripCount,
   distance,
   setDistance,
   fuelPrice,
@@ -64,6 +66,13 @@ const BusForm = ({
         label="🌙 Shif Pekerja"
         value={shifCount}
         onChange={(e) => setShifCount(Number(e.target.value))}
+        min="1"
+        max="30"
+      />
+      <InputField
+        label="📍 Ritanse"
+        value={tripCount}
+        onChange={(e) => setTripCount(Number(e.target.value))}
         min="1"
         max="30"
       />

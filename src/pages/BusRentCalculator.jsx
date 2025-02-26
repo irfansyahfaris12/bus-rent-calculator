@@ -16,9 +16,11 @@ const BusRentCalculator = () => {
   const [maintenancePrice, setMaintenancePrice] = useState(2086);
   const [depreciationCost, setDepreciationCost] = useState(8427234);
   const [margin, setMargin] = useState(10);
+  const [tripCount, setTripCount] = useState(1);
   const [calculated, setCalculated] = useState(false);
 
-  const totalKm = Object.values(distance).reduce((acc, val) => acc + val, 0);
+  const totalKm = ((distance["a_B"] + distance["b_A"]) * tripCount * shifCount) + 
+                      ((distance["pool_A"] + distance["b_Pool"]) * shifCount);
   const fuelCost = ((totalKm / 3) * fuelPrice) * busCount;
   const driverCost = (driverFee * driverCount) * shifCount;
   const maintenanceCost = totalKm * maintenancePrice * busCount;
@@ -89,7 +91,7 @@ const BusRentCalculator = () => {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-xl">
       <h2 className="text-2xl font-bold mb-6 text-center">🚍 Bus Rent Calculator</h2>
-      <BusForm {...{ busType, setBusType, busCount, setBusCount, dayCount, setDayCount, shifCount, setShifCount, driverCount, setDriverCount, distance, setDistance, fuelPrice, setFuelPrice, driverFee, setDriverFee, maintenancePrice, setMaintenancePrice, depreciationCost, setDepreciationCost, margin, setMargin }} />
+      <BusForm {...{ busType, setBusType, busCount, setBusCount, dayCount, setDayCount, shifCount, setShifCount, driverCount, setDriverCount,tripCount, setTripCount, distance, setDistance, fuelPrice, setFuelPrice, driverFee, setDriverFee, maintenancePrice, setMaintenancePrice, depreciationCost, setDepreciationCost, margin, setMargin }} />
       <div className="flex gap-4 mt-4">
         <button onClick={handleCalculate} className="w-full p-2 bg-blue-500 text-white rounded-lg">🧮 Calculate</button>
         <button onClick={handleClear} className="w-1/4 p-2 bg-gray-500 text-white rounded-lg">❌ Clear</button>
