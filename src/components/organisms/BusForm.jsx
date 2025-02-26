@@ -5,6 +5,8 @@ import DistanceInput from "../molecules/DistanceInput";
 import CostInput from "../molecules/CostInput";
 
 const BusForm = ({
+  name, 
+  setName,
   busType,
   setBusType,
   busCount,
@@ -15,7 +17,7 @@ const BusForm = ({
   setShifCount,
   driverCount,
   setDriverCount,
-  tripCount, 
+  tripCount,
   setTripCount,
   distance,
   setDistance,
@@ -31,7 +33,15 @@ const BusForm = ({
   setMargin,
 }) => (
   <>
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 gap-4">
+      <InputField
+        label="🤵 Nama Penyewa"
+        value={name}
+        type="text"
+        onChange={(e) => setName(e.target.value)}
+      />
+    </div>
+    <div className="grid grid-cols-2 gap-4 mt-4">
       <SelectField
         label="🚌 Kategori Sewa"
         value={busType}
@@ -85,13 +95,10 @@ const BusForm = ({
       setMaintenancePrice={setMaintenancePrice}
       driverFee={driverFee}
       setDriverFee={setDriverFee}
+      depreciationCost={depreciationCost}
+      setDepreciationCost={setDepreciationCost}
     />
     <div className="grid grid-cols-2 gap-4 mt-4">
-      <InputField
-        label="🏗 Biaya Penyusutan per Bus"
-        value={depreciationCost}
-        onChange={(e) => setDepreciationCost(Number(e.target.value))}
-      />
       <InputField
         label="📊 Margin (%)"
         value={margin}

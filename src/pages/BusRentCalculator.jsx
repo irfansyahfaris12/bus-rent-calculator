@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import BusForm from "../components/organisms/BusForm";
 import CalculationResults from "../components/organisms/CalculationResults";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const BusRentCalculator = () => {
+  const [name, setName] = useState("");
   const [busType, setBusType] = useState("Shuttle");
   const [busCount, setBusCount] = useState(1);
   const [dayCount, setDayCount] = useState(1);
@@ -46,7 +47,31 @@ const BusRentCalculator = () => {
     setCalculated(false);
   };
 
-  const handleExportToExcel = () => {
+  const formatRupiah = (number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0, 
+    }).format(Math.round(number));
+  };
+
+  const handleExportToPDF = () => {
+    const doc = new jsPDF();
+    const startDate = new Date(); 
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + dayCount); 
+  
+    // Format dates as "DD/MM/YYYY"
+    const formattedStartDate = startDate.toLocaleDateString("id-ID");
+    const formattedEndDate = endDate.toLocaleDateString("id-ID");
+  
+    doc.setFontSize(18);
+    doc.text(`${name} Invoice`, 14, 15);
+  
+    doc.setFontSize(12);
+    doc.text(`Tanggal Awal Sewa: ${formattedStartDate}`, 14, 22);
+    doc.text(`Tanggal Akhir Sewa: ${formattedEndDate}`, 14, 28);
+  
     const invoiceData = [
       ["Result Bus Rent Calculation"],
       ["Bus Type", busType],
@@ -54,44 +79,58 @@ const BusRentCalculator = () => {
       ["Day Count", dayCount],
       ["Shift Count", shifCount],
       ["Driver Count", driverCount],
+      ["Ritanse", tripCount],
       [""],
       ["Distance Details"],
-      ["Pool to A", distance.pool_A],
-      ["A to B", distance.a_B],
-      ["B to A", distance.b_A],
-      ["B to Pool", distance.b_Pool],
+      ["Pool to A", `${distance.pool_A} KM`],
+      ["A to B", `${distance.a_B} KM`],
+      ["B to A", `${distance.b_A} KM`],
+      ["B to Pool", `${distance.b_Pool} KM`],
       [""],
       ["Cost Breakdown"],
-      ["Fuel Price", fuelPrice],
-      ["Driver Fee", driverFee],
-      ["Maintenance Price", maintenancePrice],
-      ["Depreciation Cost", depreciationCost],
+      ["Fuel Price", formatRupiah(fuelPrice)],
+      ["Driver Fee", formatRupiah(driverFee)],
+      ["Maintenance Price", formatRupiah(maintenancePrice)],
+      ["Depreciation Cost", formatRupiah(depreciationCost)],
       ["Margin", `${margin}%`],
       [""],
       ["Summary"],
-      ["Total Km", totalKm],
-      ["Fuel Cost", fuelCost],
-      ["Driver Cost", driverCost],
-      ["Maintenance Cost", maintenanceCost],
-      ["Depreciation Cost Daily", totalDepreciationDailyCost],
-      ["Depreciation Cost Total", totalDepreciationCost],
-      ["Total Operational Cost", totaloperational],
-      ["Total Rent", totalRent],
-      ["Total Daily Rent", totalDailyRent],
+      ["Total Km", `${totalKm} KM`],
+      ["Fuel Cost", formatRupiah(fuelCost)],
+      ["Driver Cost", formatRupiah(driverCost)],
+      ["Maintenance Cost", formatRupiah(maintenanceCost)],
+      ["Depreciation Cost Daily", formatRupiah(totalDepreciationDailyCost)],
+      ["Depreciation Cost Total", formatRupiah(totalDepreciationCost)],
+      ["Total Operational Cost", formatRupiah(totaloperational)],
+      ["Total Rent", formatRupiah(totalRent)],
+      ["Total Daily Rent", formatRupiah(totalDailyRent)],
     ];
-
-    const ws = XLSX.utils.aoa_to_sheet(invoiceData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Invoice");
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const dataBlob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-    saveAs(dataBlob, "Bus_Rent_Invoice.xlsx");
+  
+    let finalData = [];
+    invoiceData.forEach((item) => {
+      if (item.length === 1) {
+        finalData.push([item[0], ""]);
+      } else {
+        finalData.push(item);
+      }
+    });
+  
+    doc.autoTable({
+      startY: 35,
+      head: [["Description", "Value"]],
+      body: finalData,
+      theme: "grid",
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [41, 128, 185] },
+    });
+    const formattedStateName = name.replace(/[\s.]+/g, "_");
+    doc.save(`${formattedStateName}_Invoice_${formattedStartDate.replace(/\//g, "-")}.pdf`);
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-xl">
       <h2 className="text-2xl font-bold mb-6 text-center">🚍 Bus Rent Calculator</h2>
-      <BusForm {...{ busType, setBusType, busCount, setBusCount, dayCount, setDayCount, shifCount, setShifCount, driverCount, setDriverCount,tripCount, setTripCount, distance, setDistance, fuelPrice, setFuelPrice, driverFee, setDriverFee, maintenancePrice, setMaintenancePrice, depreciationCost, setDepreciationCost, margin, setMargin }} />
+      <BusForm {...{ name, setName, busType, setBusType, busCount, setBusCount, dayCount, setDayCount, shifCount, setShifCount, driverCount, setDriverCount,tripCount, setTripCount, distance, setDistance, fuelPrice, setFuelPrice, driverFee, setDriverFee, maintenancePrice, setMaintenancePrice, depreciationCost, setDepreciationCost, margin, setMargin }} />
       <div className="flex gap-4 mt-4">
         <button onClick={handleCalculate} className="w-full p-2 bg-blue-500 text-white rounded-lg">🧮 Calculate</button>
         <button onClick={handleClear} className="w-1/4 p-2 bg-gray-500 text-white rounded-lg">❌ Clear</button>
@@ -99,7 +138,7 @@ const BusRentCalculator = () => {
       {calculated && (
         <>
           <CalculationResults {...{ totalKm, driverCost, fuelCost, maintenanceCost, totalDepreciationDailyCost, totalDepreciationCost, totaloperational, totalRent, totalDailyRent }} />
-          <button onClick={handleExportToExcel} className="mt-4 w-full p-2 bg-green-500 text-white rounded-lg">📥 Export to Excel</button>
+          <button onClick={handleExportToPDF} className="mt-4 w-full p-2 bg-green-500 text-white rounded-lg">📥 Export Invoice</button>
         </>
       )}
     </div>
